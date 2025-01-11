@@ -31,7 +31,7 @@ VOID AddTrackedLog(
 	PLIST_TRACKED_ITEM list,
 	TRACKED_ITEM<TRACKED_ACTION>* action
 ) {
-	//AutoLock<FastMutex> lock(&list->mtx);
+	AutoLock<FastMutex> lock(list->mtx);
 	if (list->ItemsCount > MAX_ITEMS_COUNT) {
 		auto head = RemoveHeadList(&list->ItemsHead);
 		list->ItemsCount -= 1;

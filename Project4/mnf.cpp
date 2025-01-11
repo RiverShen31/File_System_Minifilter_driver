@@ -23,16 +23,17 @@ FLT_PREOP_CALLBACK_STATUS CreatePreoperationCallback(
 			TRACKED_ITEM<TRACKED_ACTION>* item;
 			switch (createDisposition) {
 
+			case FILE_SUPERSEDE:
 			case FILE_CREATE: {
 				GenerateLog(&MinifilterData, fileNameInfo, ACTION::Create, &item);
-				DbgPrint("[LOG][CREATE] ++++++++++++++++++++++ A file is being created %ws\n", fileNameInfo->Name.Buffer);
+				//DbgPrint("[LOG][CREATE] ++++++++++++++++++++++ A file is being created %ws\n", fileNameInfo->Name.Buffer);
 				break;
 			}
 							
 			case FILE_OPEN:
 			case FILE_OVERWRITE: {
 				GenerateLog(&MinifilterData, fileNameInfo, ACTION::Open, &item);
-				DbgPrint("[LOG][OPEN] ++++++++++++++++++++++ A file is being opened %ws\n", fileNameInfo->Name.Buffer);
+				//DbgPrint("[LOG][OPEN] ++++++++++++++++++++++ A file is being opened %ws\n", fileNameInfo->Name.Buffer);
 				break;
 			}
 
@@ -52,13 +53,13 @@ FLT_PREOP_CALLBACK_STATUS CreatePreoperationCallback(
 				if (NT_SUCCESS(fileStatus)) {
 					// this is an open action
 					GenerateLog(&MinifilterData, fileNameInfo, ACTION::Open, &item);
-					DbgPrint("[LOG][OPEN] ++++++++++++++++++++++ A file is being opened %ws\n", fileNameInfo->Name.Buffer);
+					//DbgPrint("[LOG][OPEN] ++++++++++++++++++++++ A file is being opened %ws\n", fileNameInfo->Name.Buffer);
 
 				}
 				else {
 					// this is a create action
 					GenerateLog(&MinifilterData, fileNameInfo, ACTION::Create, &item);
-					DbgPrint("[LOG][CREATE] ++++++++++++++++++++++ A file is being created %ws\n", fileNameInfo->Name.Buffer);
+					//DbgPrint("[LOG][CREATE] ++++++++++++++++++++++ A file is being created %ws\n", fileNameInfo->Name.Buffer);
 
 				}
 				break;
@@ -66,7 +67,7 @@ FLT_PREOP_CALLBACK_STATUS CreatePreoperationCallback(
 
 			default: {
 				item = NULL;
-				DbgPrint("=============== UNKNOWN ACTION\n");
+				//DbgPrint("=============== UNKNOWN ACTION\n");
 				break;
 			}
 			}

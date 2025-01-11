@@ -14,9 +14,44 @@ NTSTATUS DriverRead(
 ) {
 	UNREFERENCED_PARAMETER(pDeviceObject);
 	// TODO: implement direct io for reading logs here
+
+	auto irpSp = IoGetCurrentIrpStackLocation(pIrp);
+	auto len = irpSp->Parameters.Read.Length;
+	auto status = STATUS_SUCCESS;
+
+	ULONG bytes = 0;
+	NT_ASSERT(pIrp->MdlAddress); // using Direct I/O
+
+	auto buffer = (PUCHAR)MmGetSystemAddressForMdlSafe(pIrp->MdlAddress, NormalPagePriority);
+	if (!buffer) {
+		status = STATUS_INSUFFICIENT_RESOURCES;
+	}
+	else {
+		while (true) {
+			auto entry = RemoveHeadList(&MinifilterData.LoggingItems->ItemsHead);
+			if (entry == nullptr) {
+				break;
+			}
+			auto info = CONTAINING_RECORD(entry, TRACKED_ITEM<TRACKED_ACTION>, Entry);
+			auto size = info->Data.size;
+			if (len < size) {
+				// user's buffer too small, insert item back
+				InsertHeadList(&MinifilterData.LoggingItems->ItemsHead, entry);
+				break;
+			}
+			memcpy(buffer, &info->Data, size);
+			len -= size;
+			buffer += size;
+			bytes += size;
+			ExFreePool(info);
+		}
+		DbgPrint("Test1\n");
+	}
+	DbgPrint("Test2\n");
+
+
 	return CompleteRequest(pIrp, STATUS_SUCCESS, 0);
 }
-
 VOID DriverUnload	(
 	PDRIVER_OBJECT pDriverObject
 ) {
